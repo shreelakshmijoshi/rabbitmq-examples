@@ -25,9 +25,13 @@ public class Producer {
             // ideally we need an exchange attached to a channel
             //   .basicPublish(exchange, routingKey, properties, message_body);
             //        Routing key = queue name
-            String message = "Sending this secret message from the producer";
-            channel.basicPublish("exchange_demo", ROUTING_KEY, null, message.getBytes(StandardCharsets.UTF_8));
-            LOGGER.info("Sent message : " + message);
+            String[] messages = {"One", "Two", "Three", "Four"};
+//            String message = "Sending this secret message from the producer";
+            for(String message : messages)
+            {
+                channel.basicPublish("exchange_demo", ROUTING_KEY, null, message.getBytes(StandardCharsets.UTF_8));
+                LOGGER.info("Sent message : " + message);
+            }
         }
 
 //        channel.close();
