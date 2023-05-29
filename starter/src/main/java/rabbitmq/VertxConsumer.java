@@ -1,6 +1,7 @@
 package rabbitmq;
 
 import io.vertx.core.Vertx;
+import io.vertx.rabbitmq.QueueOptions;
 import io.vertx.rabbitmq.RabbitMQClient;
 import io.vertx.rabbitmq.RabbitMQConsumer;
 import io.vertx.rabbitmq.RabbitMQOptions;
@@ -16,12 +17,17 @@ public class VertxConsumer {
     RabbitMQClient client = RabbitMQClient.create(Vertx.vertx(),rabbitMQOptions);
     AtomicReference<RabbitMQConsumer> consumer = new AtomicReference<>();
 
+    QueueOptions queueOptions = new QueueOptions();
+    // maxInternalQueue size is the maximum number of messages a queue can hold
+    queueOptions.setMaxInternalQueueSize(2).setKeepMostRecent(true);
+
+
     client
         .start()
         .onSuccess(
             handler -> {
               client.basicConsumer(
-                  DEFAULT_QUEUE,
+                  DEFAULT_QUEUE, new QueueOptions().setAutoAck(true),
                   resultHandler -> {
                     if (resultHandler.succeeded()) {
 
@@ -41,5 +47,10 @@ public class VertxConsumer {
                     }
                   });
             });
+  }
+
+  public void something()
+  {
+
   }
 }
