@@ -54,3 +54,17 @@ public class VertxConsumer {
 
   }
 }
+// userID, Monitoring queueName , data
+// /monitor -> REST API
+// userId, monitoringQueueName from body of the API
+// start a consumer for the queueName
+// start a consumer with Future handler from RestAPIClass
+// whenever we get the message,
+// maintain map or class which has userID, queueName, data consumed
+// keep appending to that map based on queueName
+// return 201 created
+// check how to get size from JSON or from String
+
+// /status
+// response will be userID, queueName
+// respond with the data consumed
