@@ -2,6 +2,7 @@ package client.server;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
+import io.vertx.core.MultiMap;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
@@ -17,23 +18,38 @@ public class ApiServerVerticle extends AbstractVerticle {
   public void start() {
 
     Router router = Router.router(vertx);
-    rabbitClient = new RabbitClient();
-    router.post(API_MONITOR)
+    rabbitClient = new RabbitClient(vertx);
+    router.get(API_MONITOR)
       .handler(this::monitor);
     router.get(API_STATUS)
       .handler(this::status);
     vertx.createHttpServer().requestHandler(router).listen(8080);
 
-  }
+  } //m.userId.appName
+
+  // /monitor
+  // body:
+  // userID :  abcd
+  // queueName : m.abcd.app1
+// this queueName naming convention could be changed
+
 
   private void monitor(RoutingContext routingContext) {
-    JsonObject body = routingContext.body().asJsonObject();
-    String userId = body.getString(PAYLOAD_USERID);
-    String queueName = body.getString(PAYLOAD_QUEUE_NAME);
+//    JsonObject body = routingContext.body().asJsonObject();
+//    System.out.println("routingContext " + routingContext.body());
+    System.out.println("query param : " + routingContext.request().getParam(PAYLOAD_QUEUE_NAME));
+    System.out.println("query param : " + routingContext.request().getParam(PAYLOAD_USERID));
+    String userId = routingContext.request().getParam(PAYLOAD_USERID);
+    String queueName = routingContext.request().getParam(PAYLOAD_QUEUE_NAME);
     HttpServerResponse response = routingContext.response();
 
-    Future<Boolean> createConsumer = rabbitClient.create(userId, queueName);
-    createConsumer.onComplete(handler -> {
+    Future<Boolean> createConsumer = rabbitClient.consume(userId, queueName);
+    createConsumer
+      .onFailure(handler -> {
+        System.out.println("Oh oh something went wrong : " + handler.getCause().getMessage());
+        handler.getCause().printStackTrace();
+      })
+      .onComplete(handler -> {
       if (handler.succeeded()) {
         System.out.println("Consumer is created for the given queue!");
         handleResponse(201, "Consumer is created for the given queue!", response);
@@ -50,8 +66,10 @@ public class ApiServerVerticle extends AbstractVerticle {
 
   public void status(RoutingContext routingContext) {
     HttpServerResponse response = routingContext.response();
+    MultiMap params = routingContext.request().params();
 
-    Future<JsonObject> getStatus = rabbitClient.status();
+    String userId = params.get(PAYLOAD_USERID);
+    Future<JsonObject> getStatus = rabbitClient.statusForUser(userId);
     getStatus.onComplete(handler -> {
       if (getStatus.succeeded() && getStatus.result() != null) {
         handleResponse(200, getStatus.result().encode(), response);

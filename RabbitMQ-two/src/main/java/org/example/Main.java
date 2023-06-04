@@ -8,7 +8,7 @@ import java.util.List;
 
 public class Main {
     public static Vertx vertx;
-    public static List<String> queueList = List.of("Queue-1","Queue-2","Queue-3","Queue-4");
+    public static List<String> queueList = List.of("Queue-1","Queue-2","Queue-3","Queue-4", "ac");
 
     public static void main(String[] args) {
         RabbitMQOptions config = new RabbitMQOptions();
@@ -30,7 +30,7 @@ public class Main {
                     publisher.createQueue(index);
                     publisher.publishWithDeliveryTag(index);
                 }
-//                System.exit(0);
+                System.exit(0);
             }
             else {
                 System.out.println("Failed to connect to RabbitMQ " + asyncResult.cause().getMessage());
