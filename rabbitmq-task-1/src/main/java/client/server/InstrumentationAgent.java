@@ -16,7 +16,7 @@ public class InstrumentationAgent {
     {
       throw new IllegalArgumentException("Agent not initialized");
     }
-    System.out.println("heree 0000");
+    System.out.println("heree 1111");
     return instrumentationAgent.getObjectSize(object);
   }
 }
