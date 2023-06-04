@@ -1,52 +1,41 @@
 package client.server;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import io.vertx.rabbitmq.RabbitMQMessage;
+
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Monitor {
-  public Map<String, ArrayList<QueueSize>> map;
+  public ConcurrentHashMap<String, Map<String, Long>> userQMap;
+  public ConcurrentHashMap<String, Long> userTotalMap;
 
   public Monitor() {
-    this.map = new HashMap<>();
+    userQMap = new ConcurrentHashMap<>();
+    userTotalMap = new ConcurrentHashMap<>();
   }
 
 
   // queueName | dataConsumed | userID
   // userId -> (queueName, sum), (queueName, sum), (queueName, sum)
 
-  public List<QueueSize> getUserData(String userId) {
-    return map.get(userId);
-  }
-
-  public void addUser(String userId) {
-    System.out.println("Adding user");
-    map.put(userId, new ArrayList<>());
-  }
-
-  public void addUserData(String userId, String queueName, long size) {
-    if(map.get(userId) == null)
-    {
-      addUser(userId);
-    }
-    System.out.println("add user data");
-    QueueSize queueSize = new QueueSize();
-    queueSize.setQueueName(queueName);
-    queueSize.setQueueSize(size);
-    map.get(userId).add(queueSize);
-  }
-
   public long getTotalUserData(String userId) {
-    long sum = 0;
-    List<QueueSize> data = this.getUserData(userId);
-    System.out.println("user data : " + data);
-    for (var val : data) {
-      long currentSum = val.getQueueSize();
-      sum += currentSum;
-    }
-    return sum;
+      System.out.println(userQMap);
+      System.out.println(userTotalMap);
+      return userTotalMap.get(userId);
   }
 
 
+
+  public void updateSize(RabbitMQMessage message, String userId, String queueName) {
+
+      System.out.println("hereee0000");
+//      long size = InstrumentationAgent.getObjectSize(message);
+      long size = 1;
+      System.out.println("heree111");
+      System.out.println("object size : " + size); //
+      userQMap.putIfAbsent(userId, new ConcurrentHashMap<>());
+      userQMap.get(userId).put(queueName, userQMap.get(userId).getOrDefault(queueName, 0L)+size);
+      userTotalMap.put(userId, userTotalMap.getOrDefault(userId, 0L)+size);
+
+  }
 }
