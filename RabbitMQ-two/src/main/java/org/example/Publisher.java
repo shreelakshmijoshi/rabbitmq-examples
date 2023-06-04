@@ -64,24 +64,24 @@ public class Publisher {
                 handler -> {
                     if (handler.succeeded()) {
                         System.out.println("Queue declared successfully");
-                        client.basicConsumer(Main.queueList.get(index),new QueueOptions(),ConsumerHandler -> {
-                            if (handler.succeeded())
-                            {
-                                RabbitMQConsumer rmqConsumer = ConsumerHandler.result();
-                                rmqConsumer.handler(
-                                        rabbitMQMessage -> {
-                                            System.out.println("Message received in consumer : " + rabbitMQMessage.body().toString());
-                                        });
-                            }
-                            else
-                            {
-                                System.out.println("Something went wrong while creating consumer after declaring queue : "+ handler.cause().getMessage());
-                                handler.cause().printStackTrace();
-                            }
-                        });
-                    } else {
-                        System.out.println("Something went wrong while declaring queue : "+ handler.cause().getMessage());
-                        handler.cause().printStackTrace();
+//                        client.basicConsumer(Main.queueList.get(index),new QueueOptions(),ConsumerHandler -> {
+//                            if (handler.succeeded())
+//                            {
+//                                RabbitMQConsumer rmqConsumer = ConsumerHandler.result();
+//                                rmqConsumer.handler(
+//                                        rabbitMQMessage -> {
+//                                            System.out.println("Message received in consumer : " + rabbitMQMessage.body().toString());
+//                                        });
+//                            }
+//                            else
+//                            {
+//                                System.out.println("Something went wrong while creating consumer after declaring queue : "+ handler.cause().getMessage());
+//                                handler.cause().printStackTrace();
+//                            }
+//                        });
+//                    } else {
+//                        System.out.println("Something went wrong while declaring queue : "+ handler.cause().getMessage());
+//                        handler.cause().printStackTrace();
                     }
                 });
     }

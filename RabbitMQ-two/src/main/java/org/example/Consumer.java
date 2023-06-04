@@ -63,3 +63,13 @@ public class Consumer {
 
     }
 }
+
+//  | queueName | size | userID
+//
+
+
+// status -> sum -> give the data consumed -> for that user
+// createSub will create subscription  as well call /monitor
+// queueName will never be duplicate
+// map for storing queueName, size and userID
+
