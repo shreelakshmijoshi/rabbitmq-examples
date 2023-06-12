@@ -1,9 +1,15 @@
 package org.example;
 
+import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.BasicProperties;
+import com.rabbitmq.client.impl.AMQBasicProperties;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.rabbitmq.QueueOptions;
 import io.vertx.rabbitmq.RabbitMQClient;
 import io.vertx.rabbitmq.RabbitMQConsumer;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.example.Util.DEFAULT_EXCHANGE;
 import static org.example.Util.DEFAULT_EXCHANGE_TYPE;
@@ -89,10 +95,14 @@ public class Publisher {
     public void publishWithDeliveryTag(int index)
     {
         System.out.println("inside publishWithDeliveryTag " + index);
+      Map<String, Object> headerMap = new HashMap<>();
+      headerMap.put("dummyMessageSize",1);
+      BasicProperties properties = new AMQP.BasicProperties.Builder().headers(headerMap).build();
+
         this.client.basicPublishWithDeliveryTag(
                 DEFAULT_EXCHANGE,
                 "routing.key." + (index+1),
-                null,
+                properties,
                 Buffer.buffer(MESSAGE_TO_BE_SENT + " saying Hello :)" + " " + (index+1)),
                 deliveryTagHandler   -> {
                     long deliveryTag = deliveryTagHandler;

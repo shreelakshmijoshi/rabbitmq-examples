@@ -9,21 +9,35 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 
 
+import java.io.IOException;
+import java.util.concurrent.TimeoutException;
+
 import static client.server.Utils.*;
 
 public class ApiServerVerticle extends AbstractVerticle {
   private RabbitClient rabbitClient;
 
   @Override
-  public void start() {
+  public void start() throws IOException, TimeoutException {
 
     Router router = Router.router(vertx);
     rabbitClient = new RabbitClient(vertx);
+
+//    Future result = rabbitClient.eventExchange();
+//    result.onSuccess(handler -> {
+//      System.out.println("Success");
+//    });
+//    result.onFailure(handler -> {
+//      System.out.println("Failure");
+//    });
+    EventListener listener = new EventListener();
+    listener.listen();
     router.get(API_MONITOR)
       .handler(this::monitor);
     router.get(API_STATUS)
       .handler(this::status);
     vertx.createHttpServer().requestHandler(router).listen(8080);
+
 
   } //m.userId.appName
 
@@ -51,7 +65,7 @@ public class ApiServerVerticle extends AbstractVerticle {
       })
       .onComplete(handler -> {
       if (handler.succeeded()) {
-        System.out.println("Consumer is created for the given queue!");
+        System.out.println("Consumer is created for the given queue!  ");
         handleResponse(201, "Consumer is created for the given queue!", response);
       } else {
         System.out.println("Something went wrong while creating the consumer : " + handler.cause().getMessage());
