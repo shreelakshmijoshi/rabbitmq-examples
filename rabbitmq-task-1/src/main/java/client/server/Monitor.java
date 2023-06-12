@@ -26,16 +26,17 @@ public class Monitor {
 
 
 
-  public void updateSize(RabbitMQMessage message, String userId, String queueName) {
+  public void updateSize(RabbitMQMessage message, String userId, String queueName, Long size) {
 
       System.out.println("hereee0000");
 //      long size = InstrumentationAgent.getObjectSize(message);
-      long size = 1;
+     // read the header of the message and continue
+    // appending
+//      long size = 1;
       System.out.println("heree111");
       System.out.println("object size : " + size); //
       userQMap.putIfAbsent(userId, new ConcurrentHashMap<>());
       userQMap.get(userId).put(queueName, userQMap.get(userId).getOrDefault(queueName, 0L)+size);
       userTotalMap.put(userId, userTotalMap.getOrDefault(userId, 0L)+size);
-
   }
 }

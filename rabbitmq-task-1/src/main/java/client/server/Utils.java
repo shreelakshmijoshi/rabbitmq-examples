@@ -5,4 +5,5 @@ public class Utils {
   public static final String API_STATUS = "/status/:userId";
   public static final String PAYLOAD_USERID = "userId";
   public static final String PAYLOAD_QUEUE_NAME = "queueName";
+  public static final String MESSAGE_SIZE_HEADER = "dummyMessageSize";
 }
